@@ -2,7 +2,6 @@ package com.example.lebarto.wifidirecttest.view;
 
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.support.v7.widget.RecyclerView;
-import android.util.LongSparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,9 @@ import android.widget.TextView;
 
 import com.example.lebarto.wifidirecttest.R;
 import com.example.lebarto.wifidirecttest.WiFiP2pService;
+import com.example.lebarto.wifidirecttest.presenter.MainPresenter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,21 +20,16 @@ import java.util.List;
 
 public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ArticleVH> {
 
-    private List<WiFiP2pService> items;
-    private DeviceClickListener deviceClickListener;
+    private List<WiFiP2pService> items = new ArrayList<>();
+    private MainPresenter presenter;
 
-    public interface DeviceClickListener {
-        void connectP2p(WiFiP2pService service);
-    }
-
-    public DevicesAdapter(List<WiFiP2pService> items,
-        DeviceClickListener deviceClickListener) {
-        this.items = items;
-        this.deviceClickListener = deviceClickListener;
+    public DevicesAdapter(MainPresenter presenter) {
+        this.presenter = presenter;
     }
 
     public void add(WiFiP2pService item) {
         items.add(item);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -46,20 +42,24 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ArticleV
     public void onBindViewHolder(ArticleVH holder, int position) {
         final WiFiP2pService item = items.get(position);
 
-        holder.name
-            .setText(item.getDevice().deviceName);
+        holder.name.setText(item.getDevice().deviceName);
         holder.status.setText(getDeviceStatus(item.getDevice().status));
-        holder.mainView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deviceClickListener.connectP2p(item);
-            }
-        });
+        holder.mainView.setOnClickListener(v -> presenter.connectP2p(item));
     }
 
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    public void setServices(List<WiFiP2pService> services) {
+        this.items = services;
+        notifyDataSetChanged();
+    }
+
+    public void clear() {
+        items = new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     class ArticleVH extends RecyclerView.ViewHolder {

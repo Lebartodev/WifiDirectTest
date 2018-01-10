@@ -46,8 +46,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             if (networkInfo.isConnected()) {
                 Log.d(TAG,
                     "Connected to p2p network. Requesting network details");
-                manager.requestConnectionInfo(channel,
-                    (ConnectionInfoListener) activity);
+                manager.requestConnectionInfo(channel, (ConnectionInfoListener) activity);
             } else {
                 // It's a disconnect
             }

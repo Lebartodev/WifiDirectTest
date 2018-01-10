@@ -12,7 +12,6 @@ import java.net.Socket;
  */
 
 public class Client extends Thread {
-    private Socket socket;
     private ServerBase serverBase;
 
     private ObjectInputStream ois;
@@ -20,7 +19,6 @@ public class Client extends Thread {
 
     public Client(Socket socket, ServerBase serverBase) {
         this.serverBase = serverBase;
-        this.socket = socket;
         try {
             oos = new ObjectOutputStream(socket.getOutputStream());
             ois = new ObjectInputStream(socket.getInputStream());
@@ -33,10 +31,11 @@ public class Client extends Thread {
         try {
             while (true) {
                 try {
-                    String readMessage = ois.readUTF();
-                    serverBase.onClientDone(Integer.parseInt(readMessage));
+                    Object readMessage = ois.readObject();
+                    serverBase.onClientDone(Integer.parseInt(String.valueOf(readMessage)));
                 } catch (IOException e) {
                     Log.e("Client", "disconnected", e);
+                    break;
                 }
             }
         } catch (Exception e) {

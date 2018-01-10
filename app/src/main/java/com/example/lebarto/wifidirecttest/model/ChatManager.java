@@ -2,11 +2,14 @@ package com.example.lebarto.wifidirecttest.model;
 
 import android.util.Log;
 
+import com.example.lebarto.wifidirecttest.actions.Action;
+import com.example.lebarto.wifidirecttest.actions.MapOperation;
 import com.example.lebarto.wifidirecttest.actions.WordCount;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 
 public class ChatManager implements Runnable {
@@ -30,14 +33,13 @@ public class ChatManager implements Runnable {
 
             while (true) {
                 try {
-                    // Read from the InputStream
-                    String readMessage = iStream.readUTF();
-
-                    write(String.valueOf(WordCount.proccess(readMessage)));
-                    Log.d(TAG, readMessage);
-                    // Send the obtained bytes to the UI Activity
+                    Action action = (Action) iStream.readObject();
+                    write(action.process());
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
+                    break;
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
             }
         } catch (IOException e) {
@@ -51,9 +53,9 @@ public class ChatManager implements Runnable {
         }
     }
 
-    public void write(String buffer) {
+    public void write(Object buffer) {
         try {
-            oStream.writeUTF(buffer);
+            oStream.writeObject(buffer);
             oStream.flush();
         } catch (IOException e) {
             Log.e(TAG, "Exception during write", e);
