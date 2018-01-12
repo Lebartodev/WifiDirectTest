@@ -10,16 +10,16 @@ import android.util.Log;
 
 import com.example.lebarto.wifidirecttest.WiFiP2pService;
 import com.example.lebarto.wifidirecttest.actions.Action;
+import com.example.lebarto.wifidirecttest.actions.FlatMapListOperation;
+import com.example.lebarto.wifidirecttest.actions.FlatMapOperation;
 import com.example.lebarto.wifidirecttest.actions.MapOperation;
-import com.example.lebarto.wifidirecttest.actions.WordCount;
+import com.example.lebarto.wifidirecttest.util.ActionUtil;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
@@ -139,22 +139,19 @@ public class MainModel {
 
     public Single<Integer> calculate() {
         return Single.create(e -> {
-            groupOwnerSocketHandler.setListener(e::onSuccess);
-            StringBuilder stringBuilder = new StringBuilder();
-            File file = new File("/storage/emulated/0/bible.txt");
-            if (file.exists()) {
-                FileInputStream is = new FileInputStream(file);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-                String line;
-                for (int i = 0; i < 1000; i++) {
-                    line = reader.readLine();
-                    stringBuilder.append(line);
-                }
+            if (groupOwnerSocketHandler == null) {
+                return;
             }
+            groupOwnerSocketHandler.setListener(e::onSuccess);
 
-            Action action = new Action().setData(stringBuilder.toString())
-                .add(new MapOperation(
-                    (MapOperation.SAM & Serializable) s1 -> WordCount.proccess((String) s1)));
+            Action action = ActionUtil.fromTextFile("/storage/emulated/0/bible.txt")
+                .flatMap((FlatMapOperation.SAM & Serializable) s -> s + " asdsadssa ")
+                .flatMapList((FlatMapListOperation.ListSAM & Serializable) s -> Arrays
+                    .asList(((String) s).split("\\s+")))
+
+                .map((MapOperation.SAM & Serializable) s -> ((List) s).size())
+                .collect();
+
             groupOwnerSocketHandler.sendAction(action);
         });
     }

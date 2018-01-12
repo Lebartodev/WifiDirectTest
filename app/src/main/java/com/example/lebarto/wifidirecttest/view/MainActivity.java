@@ -16,9 +16,15 @@ import com.baoyz.widget.PullRefreshLayout;
 import com.example.lebarto.wifidirecttest.R;
 import com.example.lebarto.wifidirecttest.WiFiDirectBroadcastReceiver;
 import com.example.lebarto.wifidirecttest.WiFiP2pService;
+import com.example.lebarto.wifidirecttest.actions.Action;
+import com.example.lebarto.wifidirecttest.actions.FlatMapListOperation;
+import com.example.lebarto.wifidirecttest.actions.MapOperation;
 import com.example.lebarto.wifidirecttest.presenter.MainPresenter;
+import com.example.lebarto.wifidirecttest.util.ActionUtil;
 
-import java.util.List;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity
     implements MainPage, WifiP2pManager.ConnectionInfoListener {
@@ -59,7 +65,8 @@ public class MainActivity extends AppCompatActivity
         pullRefreshLayout.setRefreshing(true);
         pullRefreshLayout.setOnRefreshListener(() -> {
             adapter.clear();
-            presenter.startUpdate();});
+            presenter.startUpdate();
+        });
         findViewById(R.id.button).setOnClickListener(v -> {
             presenter.startCalculate();
         });
@@ -82,7 +89,6 @@ public class MainActivity extends AppCompatActivity
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
         presenter.connectionInfoAvailable(info);
     }
-
 
     @Override
     public void addService(WiFiP2pService wiFiP2pService) {

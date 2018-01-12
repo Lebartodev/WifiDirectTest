@@ -26,7 +26,7 @@ public class ClientSocketHandler extends Thread {
             socket.connect(new InetSocketAddress(mAddress.getHostAddress(),
                 4545), 5000);
             Log.d(TAG, "Launching the I/O handler");
-            chat = new ChatManager(socket);
+            chat = new ChatManager(socket,mAddress.getHostAddress());
             new Thread(chat).start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -37,9 +37,5 @@ public class ClientSocketHandler extends Thread {
             }
             return;
         }
-    }
-
-    public ChatManager getChat() {
-        return chat;
     }
 }

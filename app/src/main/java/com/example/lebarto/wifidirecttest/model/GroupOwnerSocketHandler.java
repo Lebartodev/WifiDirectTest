@@ -40,8 +40,9 @@ public class GroupOwnerSocketHandler extends Thread implements ServerBase {
                     if (socket != null && !socket.isClosed()) {
                         socket.close();
                     }
+                    Log.e(TAG, "run: ", e);
                 } catch (IOException ioe) {
-
+                    Log.e(TAG, "run: ", ioe);
                 }
                 e.printStackTrace();
                 break;
@@ -51,13 +52,10 @@ public class GroupOwnerSocketHandler extends Thread implements ServerBase {
 
     public void sendAction(Action action) {
         doneCount = 0;
-        for (Client client : clients) {
-            try {
-                client.getOos().writeObject(action);
-                client.getOos().flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            action.send(clients);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

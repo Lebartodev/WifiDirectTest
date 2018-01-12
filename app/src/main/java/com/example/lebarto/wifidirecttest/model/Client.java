@@ -12,12 +12,14 @@ import java.net.Socket;
  */
 
 public class Client extends Thread {
+    private Socket socket;
     private ServerBase serverBase;
 
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
 
     public Client(Socket socket, ServerBase serverBase) {
+        this.socket = socket;
         this.serverBase = serverBase;
         try {
             oos = new ObjectOutputStream(socket.getOutputStream());
@@ -42,6 +44,8 @@ public class Client extends Thread {
             e.printStackTrace();
         }
     }
+
+
 
     public ObjectOutputStream getOos() {
         return oos;

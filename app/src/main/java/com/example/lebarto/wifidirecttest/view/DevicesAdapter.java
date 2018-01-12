@@ -2,6 +2,7 @@ package com.example.lebarto.wifidirecttest.view;
 
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.support.v7.widget.RecyclerView;
+import android.util.LongSparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,7 @@ import java.util.List;
 
 public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ArticleVH> {
 
-    private List<WiFiP2pService> items = new ArrayList<>();
+    private LongSparseArray<WiFiP2pService> items = new LongSparseArray<>();
     private MainPresenter presenter;
 
     public DevicesAdapter(MainPresenter presenter) {
@@ -28,7 +29,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ArticleV
     }
 
     public void add(WiFiP2pService item) {
-        items.add(item);
+        items.put(item.getDevice().deviceAddress.hashCode(), item);
         notifyDataSetChanged();
     }
 
@@ -40,7 +41,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ArticleV
 
     @Override
     public void onBindViewHolder(ArticleVH holder, int position) {
-        final WiFiP2pService item = items.get(position);
+        final WiFiP2pService item = items.valueAt(position);
 
         holder.name.setText(item.getDevice().deviceName);
         holder.status.setText(getDeviceStatus(item.getDevice().status));
@@ -52,13 +53,8 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ArticleV
         return items.size();
     }
 
-    public void setServices(List<WiFiP2pService> services) {
-        this.items = services;
-        notifyDataSetChanged();
-    }
-
     public void clear() {
-        items = new ArrayList<>();
+        items = new LongSparseArray<>();
         notifyDataSetChanged();
     }
 

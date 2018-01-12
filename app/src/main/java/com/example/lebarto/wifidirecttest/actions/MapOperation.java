@@ -14,10 +14,11 @@ public class MapOperation implements Operation, Serializable {
     }
 
     @Override
-    public Object process(Object o) {
-        return s2.action(o);
+    public void process(Action o) {
+        o.setResult(s2.action(o.getResult()));
     }
 
+    @FunctionalInterface
     public interface SAM {
         Object action(Object s);
     }

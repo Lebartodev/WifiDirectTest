@@ -3,20 +3,20 @@ package com.example.lebarto.wifidirecttest.model;
 import android.util.Log;
 
 import com.example.lebarto.wifidirecttest.actions.Action;
-import com.example.lebarto.wifidirecttest.actions.MapOperation;
-import com.example.lebarto.wifidirecttest.actions.WordCount;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class ChatManager implements Runnable {
 
+    private final String hostAddress;
     private Socket socket = null;
 
-    public ChatManager(Socket socket) {
+    public ChatManager(Socket socket, String hostAddress) {
+        this.hostAddress = hostAddress;
         this.socket = socket;
     }
 
@@ -33,10 +33,15 @@ public class ChatManager implements Runnable {
 
             while (true) {
                 try {
-                    Action action = (Action) iStream.readObject();
-                    write(action.process());
+                    if (socket.isConnected()) {
+                        Action action = (Action) iStream.readObject();
+                        write(action.process());
+                    } else {
+                        reconnect();
+                    }
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
+                    reconnect();
                     break;
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
@@ -47,6 +52,32 @@ public class ChatManager implements Runnable {
         } finally {
             try {
                 socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void reconnect() {
+        if (socket != null) {
+            try {
+
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        while (true) {
+            try {
+
+                Thread.sleep(1000);
+                socket = new Socket();
+                socket.bind(null);
+                socket.connect(new InetSocketAddress(hostAddress,
+                    4545), 5000);
+                Log.d(TAG, "reconnecting");
+                run();
+            } catch (InterruptedException e) {
             } catch (IOException e) {
                 e.printStackTrace();
             }
