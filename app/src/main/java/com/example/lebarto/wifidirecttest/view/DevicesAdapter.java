@@ -1,13 +1,15 @@
 package com.example.lebarto.wifidirecttest.view;
 
+import android.content.Intent;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
-import android.util.LongSparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.lebarto.wifidirecttest.MainService;
 import com.example.lebarto.wifidirecttest.R;
 import com.example.lebarto.wifidirecttest.WiFiP2pService;
 import com.example.lebarto.wifidirecttest.presenter.MainPresenter;
@@ -21,15 +23,14 @@ import java.util.List;
 
 public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ArticleVH> {
 
-    private LongSparseArray<WiFiP2pService> items = new LongSparseArray<>();
-    private MainPresenter presenter;
+    private List<WiFiP2pService> items = new ArrayList<>();
 
-    public DevicesAdapter(MainPresenter presenter) {
-        this.presenter = presenter;
+    public DevicesAdapter() {
     }
 
-    public void add(WiFiP2pService item) {
-        items.put(item.getDevice().deviceAddress.hashCode(), item);
+    public void setItems(
+        List<WiFiP2pService> items) {
+        this.items = items;
         notifyDataSetChanged();
     }
 
@@ -41,11 +42,17 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ArticleV
 
     @Override
     public void onBindViewHolder(ArticleVH holder, int position) {
-        final WiFiP2pService item = items.valueAt(position);
+        final WiFiP2pService item = items.get(position);
 
         holder.name.setText(item.getDevice().deviceName);
-        holder.status.setText(getDeviceStatus(item.getDevice().status));
-        holder.mainView.setOnClickListener(v -> presenter.connectP2p(item));
+        holder.status
+            .setText(item.isConnected() ? "Connected" : getDeviceStatus(item.getDevice().status));
+        holder.mainView.setOnClickListener(v -> {
+
+            Intent intent = new Intent(MainService.INTENT_CONNECT_TO_SERVICE);
+            intent.putExtra(MainService.DATA_CONNECT_TO_SERVICE, item);
+            holder.mainView.getContext().sendBroadcast(intent);
+        });
     }
 
     @Override
@@ -54,8 +61,18 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ArticleV
     }
 
     public void clear() {
-        items = new LongSparseArray<>();
+        items = new ArrayList<>();
         notifyDataSetChanged();
+    }
+
+    public void connectItem(Parcelable parcelableExtra) {
+        WifiP2pDevice device = (WifiP2pDevice) parcelableExtra;
+        for (WiFiP2pService item : items) {
+            if (item.getDevice().deviceAddress.equals(device.deviceAddress)) {
+                item.setConnected(true);
+                notifyDataSetChanged();
+            }
+        }
     }
 
     class ArticleVH extends RecyclerView.ViewHolder {

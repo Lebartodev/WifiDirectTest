@@ -14,10 +14,12 @@ public class GroupOwnerSocketHandler extends Thread implements ServerBase {
     private static final String TAG = "GroupOwnerSocketHandler";
     private List<Client> clients = new ArrayList<>();
     private OnDoneListener listener;
+    private ClientListener clientListener;
 
     private int doneCount = 0;
 
-    public GroupOwnerSocketHandler() throws IOException {
+    public GroupOwnerSocketHandler(ClientListener clientListener) throws IOException {
+        this.clientListener = clientListener;
         try {
             socket = new ServerSocket(4545);
             Log.d("GroupOwnerSocketHandler", "Socket Started");
@@ -29,13 +31,16 @@ public class GroupOwnerSocketHandler extends Thread implements ServerBase {
 
     @Override
     public void run() {
+        clients = new ArrayList<>();
         while (true) {
             try {
                 Client client = new Client(socket.accept(), this);
                 client.start();
                 clients.add(client);
+                clientListener.onClientAdded(clients.size());
                 Log.d(TAG, "Launching the I/O handler");
             } catch (IOException e) {
+                clientListener.onClientAdded(clients.size());
                 try {
                     if (socket != null && !socket.isClosed()) {
                         socket.close();
@@ -53,7 +58,10 @@ public class GroupOwnerSocketHandler extends Thread implements ServerBase {
     public void sendAction(Action action) {
         doneCount = 0;
         try {
-            action.send(clients);
+            for (int i = 0; i < clients.size(); i++) {
+                clients.get(i).getOos().writeObject(action);
+                clients.get(i).getOos().flush();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -67,6 +75,11 @@ public class GroupOwnerSocketHandler extends Thread implements ServerBase {
                 listener.onTextCalculated(count);
             }
         }
+    }
+
+    @Override
+    public void connectionReset(Client client) {
+        clients.remove(client);
     }
 
     public void setListener(OnDoneListener listener) {

@@ -6,4 +6,5 @@ package com.example.lebarto.wifidirecttest.model;
 
 public interface ServerBase {
     void onClientDone(int count);
+    void connectionReset(Client client);
 }

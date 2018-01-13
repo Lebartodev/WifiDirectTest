@@ -36,6 +36,7 @@ public class Client extends Thread {
                     Object readMessage = ois.readObject();
                     serverBase.onClientDone(Integer.parseInt(String.valueOf(readMessage)));
                 } catch (IOException e) {
+                    serverBase.connectionReset(this);
                     Log.e("Client", "disconnected", e);
                     break;
                 }

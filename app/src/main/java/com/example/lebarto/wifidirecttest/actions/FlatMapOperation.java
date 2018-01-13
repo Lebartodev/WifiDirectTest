@@ -16,18 +16,16 @@ public class FlatMapOperation implements Operation, Serializable {
     }
 
     @Override
-    public void process(Action o) {
+    public Object process(Object o) {
         List<Object> result = new ArrayList<>();
-        for (Object o1 : (List<Object>)o.getResult()) {
+        for (Object o1 : (List<Object>) o) {
             if (operator != null) {
                 result.add(operator.action(o1));
             }
         }
-
-        o.setResult(result);
+        return result;
     }
 
-    @FunctionalInterface
     public interface SAM {
         Object action(Object s);
     }

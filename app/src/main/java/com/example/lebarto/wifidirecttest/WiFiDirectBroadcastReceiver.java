@@ -1,6 +1,6 @@
 package com.example.lebarto.wifidirecttest;
 
-import android.app.Activity;
+import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,16 +19,15 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
     private WifiP2pManager manager;
     private Channel channel;
-    private Activity activity;
+    private Service service;
 
     public WiFiDirectBroadcastReceiver(WifiP2pManager manager, Channel channel,
-        Activity activity) {
+        Service service) {
         super();
         this.manager = manager;
         this.channel = channel;
-        this.activity = activity;
+        this.service = service;
     }
-
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -46,7 +45,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             if (networkInfo.isConnected()) {
                 Log.d(TAG,
                     "Connected to p2p network. Requesting network details");
-                manager.requestConnectionInfo(channel, (ConnectionInfoListener) activity);
+                manager.requestConnectionInfo(channel, (ConnectionInfoListener) service);
             } else {
                 // It's a disconnect
             }

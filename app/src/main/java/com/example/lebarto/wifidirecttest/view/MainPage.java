@@ -10,9 +10,5 @@ import java.util.List;
 
 public interface MainPage {
 
-    void serviceConnected(WiFiP2pService wiFiP2pService);
 
-    void onCalculated(Integer result);
-
-    void addService(WiFiP2pService wiFiP2pService);
 }

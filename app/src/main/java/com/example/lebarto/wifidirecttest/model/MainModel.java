@@ -10,14 +10,12 @@ import android.util.Log;
 
 import com.example.lebarto.wifidirecttest.WiFiP2pService;
 import com.example.lebarto.wifidirecttest.actions.Action;
-import com.example.lebarto.wifidirecttest.actions.FlatMapListOperation;
-import com.example.lebarto.wifidirecttest.actions.FlatMapOperation;
 import com.example.lebarto.wifidirecttest.actions.MapOperation;
+import com.example.lebarto.wifidirecttest.actions.WordCount;
 import com.example.lebarto.wifidirecttest.util.ActionUtil;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,26 +141,23 @@ public class MainModel {
                 return;
             }
             groupOwnerSocketHandler.setListener(e::onSuccess);
-
             Action action = ActionUtil.fromTextFile("/storage/emulated/0/bible.txt")
-                .flatMap((FlatMapOperation.SAM & Serializable) s -> s + " asdsadssa ")
-                .flatMapList((FlatMapListOperation.ListSAM & Serializable) s -> Arrays
-                    .asList(((String) s).split("\\s+")))
-
-                .map((MapOperation.SAM & Serializable) s -> ((List) s).size())
+                .add(new MapOperation(
+                    (MapOperation.SAM & Serializable) s1 -> WordCount
+                        .proccess(((List<String>) s1).get(0))))
+                //.add(new MapOperation((MapOperation.SAM & Serializable) s1 -> ((Integer) s1) * 0))
                 .collect();
-
             groupOwnerSocketHandler.sendAction(action);
         });
     }
 
-    public void connectionInfoAviable(WifiP2pInfo p2pInfo) {
+    public void connectionInfoAviable(WifiP2pInfo p2pInfo, ClientListener listener) {
         Thread handler = null;
 
         if (p2pInfo.isGroupOwner) {
             Log.d(TAG, "Connected as group owner");
             try {
-                groupOwnerSocketHandler = new GroupOwnerSocketHandler();
+                groupOwnerSocketHandler = new GroupOwnerSocketHandler(listener);
                 groupOwnerSocketHandler.start();
             } catch (IOException e) {
                 Log.d(TAG,
