@@ -1,4 +1,4 @@
-package com.example.lebarto.wifidirecttest.actions;
+package com.example.logic_model.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;

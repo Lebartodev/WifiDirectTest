@@ -1,6 +1,9 @@
 apply plugin: 'com.android.application'
 
 android {
+    dexOptions {
+        preDexLibraries true
+    }
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.example.lebarto.wifidirecttest"
@@ -34,4 +37,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     implementation 'com.android.support:design:26.1.0'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    compile project(path: ':logic_model')
 }

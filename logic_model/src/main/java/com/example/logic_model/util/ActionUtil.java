@@ -1,6 +1,6 @@
-package com.example.lebarto.wifidirecttest.util;
+package com.example.logic_model.util;
 
-import com.example.lebarto.wifidirecttest.actions.Action;
+import com.example.logic_model.model.Action;
 
 import java.io.BufferedReader;
 import java.io.File;

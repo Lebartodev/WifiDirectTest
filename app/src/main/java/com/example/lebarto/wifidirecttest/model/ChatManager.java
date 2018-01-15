@@ -2,13 +2,14 @@ package com.example.lebarto.wifidirecttest.model;
 
 import android.util.Log;
 
-import com.example.lebarto.wifidirecttest.actions.Action;
+import com.example.logic_model.model.Action;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.List;
 
 public class ChatManager implements Runnable {
 

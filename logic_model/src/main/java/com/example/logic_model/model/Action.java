@@ -1,4 +1,4 @@
-package com.example.lebarto.wifidirecttest.actions;
+package com.example.logic_model.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,6 +11,10 @@ import java.util.List;
 public class Action<T extends Serializable> implements Serializable {
     private List<T> data;
     private List<Operation> operations = new ArrayList<>();
+
+    public List<Operation> getOperations() {
+        return operations;
+    }
 
     public Action add(Operation operation) {
         operations.add(operation);
