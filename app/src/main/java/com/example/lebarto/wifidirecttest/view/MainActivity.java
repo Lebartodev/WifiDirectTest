@@ -16,7 +16,13 @@ import com.baoyz.widget.PullRefreshLayout;
 import com.example.lebarto.wifidirecttest.MainService;
 import com.example.lebarto.wifidirecttest.R;
 import com.example.lebarto.wifidirecttest.WiFiP2pService;
+import com.example.logic_model.model.Action;
+import com.example.logic_model.model.functions.FlatMapOperation;
+import com.example.logic_model.model.Tuple;
+import com.example.logic_model.util.ActionUtil;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -31,6 +37,18 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        try {
+            Action action = ActionUtil.fromTextFile("/storage/emulated/0/bible.txt")
+                .flatMap((FlatMapOperation.SAM<String, Integer>) s -> 0)
+                .flatMap(s -> s + " aSD")
+                .flatMapList(s -> Arrays.asList(((String) s).trim().split("\\s+")))
+                .mapToPair(o -> new Tuple<>((String) o, 1))
+                .collect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         startService(new Intent(this, MainService.class));
         RecyclerView list = findViewById(R.id.list);
         pullRefreshLayout = findViewById(R.id.refresh_devices);

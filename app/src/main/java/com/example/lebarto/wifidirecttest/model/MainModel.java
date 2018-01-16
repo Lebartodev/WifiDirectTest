@@ -9,15 +9,13 @@ import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.util.Log;
 
 import com.example.lebarto.wifidirecttest.WiFiP2pService;
-import com.example.lebarto.wifidirecttest.actions.WordCount;
 import com.example.logic_model.model.Action;
-import com.example.logic_model.model.MapOperation;
+import com.example.logic_model.model.Tuple;
 import com.example.logic_model.util.ActionUtil;
 
 import java.io.IOException;
-import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
@@ -142,7 +140,10 @@ public class MainModel {
             }
             groupOwnerSocketHandler.setListener(e::onSuccess);
             Action action = ActionUtil.fromTextFile("/storage/emulated/0/bible.txt")
-                .add(new MapOperation((MapOperation.SAM & Serializable) s1 -> WordCount.proccess(((List<String>) s1).get(0))*2))
+                .flatMap(s -> s + " d d d d d d ")
+                .flatMap(s -> s + " d d d d d d ")
+                .flatMapList(s -> Arrays.asList(((String) s).trim().split("\\s+")))
+                .mapToPair(o -> new Tuple<>((String) o, 1))
                 .collect();
             groupOwnerSocketHandler.sendAction(action);
         });

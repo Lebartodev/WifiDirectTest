@@ -1,4 +1,6 @@
-package com.example.logic_model.model;
+package com.example.logic_model.model.functions;
+
+import com.example.logic_model.model.Action;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,22 +11,24 @@ import java.util.List;
  */
 
 public class FlatMapListOperation implements Operation, Serializable {
-    ListSAM listOperator;
+    private ListSAM listOperator;
 
     public FlatMapListOperation(Object obj) {
         listOperator = (ListSAM & Serializable) obj;
     }
 
     @Override
-    public Object process(Object o) {
+    public void process(Action o) {
         List<Object> result = new ArrayList<>();
-        for (Object o1 : (List<Object>) o) {
+        for (Object o1 : (List<Object>) o.getResult()) {
             result.addAll(listOperator.action(o1));
         }
-        return result;
+
+        o.setResult(result);
     }
 
-    public interface ListSAM {
-        List<Object> action(Object s);
+    @FunctionalInterface
+    public interface ListSAM<T, R> extends Serializable {
+        List<R> action(T s);
     }
 }

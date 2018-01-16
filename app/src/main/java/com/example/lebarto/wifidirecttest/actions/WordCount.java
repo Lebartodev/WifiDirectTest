@@ -5,7 +5,7 @@ package com.example.lebarto.wifidirecttest.actions;
  */
 
 public class WordCount {
-    public static int proccess(String str) {
+    public static int process(String str) {
         int res = 0;
         String[] wordArray =
             str.trim().split("\\s+");

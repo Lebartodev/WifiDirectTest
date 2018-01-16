@@ -1,4 +1,6 @@
-package com.example.logic_model.model;
+package com.example.logic_model.model.functions;
+
+import com.example.logic_model.model.Action;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,17 +18,19 @@ public class FlatMapOperation implements Operation, Serializable {
     }
 
     @Override
-    public Object process(Object o) {
+    public void process(Action o) {
         List<Object> result = new ArrayList<>();
-        for (Object o1 : (List<Object>) o) {
+        for (Object o1 : (List<Object>) o.getResult()) {
             if (operator != null) {
                 result.add(operator.action(o1));
             }
         }
-        return result;
+
+        o.setResult(result);
     }
 
-    public interface SAM {
-        Object action(Object s);
+    @FunctionalInterface
+    public interface SAM<T, R> extends Serializable {
+        R action(T s);
     }
 }
